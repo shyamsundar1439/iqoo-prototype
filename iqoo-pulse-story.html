@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iQOO Pulse — a story of watching over</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Newsreader:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0E10;
+    --bg-raised:#12161A;
+    --line:#20262B;
+    --text:#EDEFF0;
+    --text-dim:#8B939A;
+    --calm:#3ED6D1;
+    --calm-dim:#1D4B49;
+    --warm:#E8785A;
+    --warm-dim:#4A2A20;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Manrope',sans-serif;
+    overflow-x:hidden;
+  }
+  .thread-rail{
+    position:fixed;
+    left:50%;
+    top:0;
+    bottom:0;
+    width:2px;
+    transform:translateX(-50%);
+    z-index:1;
+    background:linear-gradient(to bottom, var(--calm-dim), var(--calm-dim));
+    opacity:.5;
+  }
+  .thread-rail::after{
+    content:"";
+    position:absolute;
+    left:-1px; top:0;
+    width:4px; height:120px;
+    background:linear-gradient(to bottom, transparent, var(--calm), transparent);
+    animation:travel 5s linear infinite;
+    filter:blur(1px);
+  }
+  @keyframes travel{
+    0%{top:-120px;}
+    100%{top:100%;}
+  }
+  body.alert .thread-rail::after{ background:linear-gradient(to bottom, transparent, var(--warm), transparent); animation-duration:1.4s; }
+
+  .hero{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:2rem;
+    position:relative;
+    z-index:2;
+  }
+  .eyebrow-devices{
+    display:flex; align-items:center; gap:18px; margin-bottom:2.5rem;
+  }
+  .mini-watch, .mini-phone{
+    border:1px solid var(--line);
+    background:var(--bg-raised);
+  }
+  .mini-watch{
+    width:34px; height:40px; border-radius:10px;
+  }
+  .mini-phone{
+    width:26px; height:44px; border-radius:6px;
+  }
+  .thread-dot{
+    width:6px; height:6px; border-radius:50%;
+    background:var(--calm);
+    box-shadow:0 0 12px 2px var(--calm);
+  }
+  h1{
+    font-family:'Newsreader', serif;
+    font-weight:400;
+    font-size:clamp(2.2rem, 5vw, 3.6rem);
+    line-height:1.15;
+    max-width:14ch;
+    letter-spacing:-0.01em;
+  }
+  h1 em{ font-style:italic; color:var(--calm); }
+  .hero p{
+    margin-top:1.5rem;
+    color:var(--text-dim);
+    font-size:1.05rem;
+    max-width:38ch;
+  }
+  .scroll-cue{
+    position:absolute; bottom:2.5rem;
+    font-size:.8rem; color:var(--text-dim);
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+  }
+  .scroll-cue::after{
+    content:""; width:1px; height:30px; background:var(--line);
+    animation:pulseline 2s ease-in-out infinite;
+  }
+  @keyframes pulseline{ 0%,100%{opacity:.3;} 50%{opacity:1;} }
+
+  .beat{
+    min-height:100vh;
+    display:grid;
+    grid-template-columns:1fr;
+    align-items:center;
+    justify-content:center;
+    padding:5rem 1.5rem;
+    max-width:760px;
+    margin:0 auto;
+    position:relative;
+    z-index:2;
+  }
+  .beat-devices{
+    display:flex; align-items:center; justify-content:center; gap:0;
+    margin-bottom:2rem;
+    opacity:0; transform:translateY(16px);
+    transition:opacity .8s ease, transform .8s ease;
+  }
+  .beat.in-view .beat-devices{ opacity:1; transform:none; }
+
+  .device{
+    background:var(--bg-raised);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:14px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:8px;
+    position:relative;
+  }
+  .device.watch{ width:110px; height:130px; border-radius:26px; }
+  .device.phone{ width:150px; height:220px; border-radius:22px; }
+  .device .time{ font-size:1rem; color:var(--text-dim); font-variant-numeric:tabular-nums; }
+  .device .status-dot{
+    width:8px; height:8px; border-radius:50%; background:var(--calm);
+    box-shadow:0 0 10px 2px var(--calm);
+    transition:background .5s ease, box-shadow .5s ease;
+  }
+  .device.flag .status-dot{ background:var(--warm); box-shadow:0 0 10px 2px var(--warm); }
+  .device .label{ font-size:.65rem; color:var(--text-dim); text-align:center; line-height:1.4; max-width:80px; }
+  .device.flag .label{ color:var(--warm); }
+
+  .connector{
+    width:64px; height:2px;
+    background:var(--line);
+    position:relative;
+    align-self:center;
+  }
+  .connector::after{
+    content:""; position:absolute; top:-1px; left:0; height:4px; width:14px;
+    background:var(--calm); border-radius:4px; filter:blur(.5px);
+    animation:pulse-across 2.6s ease-in-out infinite;
+  }
+  .beat.flag .connector::after{ background:var(--warm); animation-duration:1s; }
+  @keyframes pulse-across{
+    0%{ left:0; opacity:0; }
+    15%{ opacity:1; }
+    85%{ opacity:1; }
+    100%{ left:calc(100% - 14px); opacity:0; }
+  }
+
+  .signal-row{
+    display:flex; flex-direction:column; gap:8px; width:100%; max-width:280px;
+    margin:0 auto 2rem;
+    opacity:0; transform:translateY(10px);
+    transition:opacity .8s ease .15s, transform .8s ease .15s;
+  }
+  .beat.in-view .signal-row{ opacity:1; transform:none; }
+  .signal-chip{
+    border:1px solid var(--line);
+    background:var(--bg-raised);
+    border-radius:8px;
+    padding:8px 12px;
+    font-size:.78rem;
+    color:var(--text-dim);
+    display:flex; align-items:center; gap:8px;
+  }
+  .signal-chip .dot{ width:5px; height:5px; border-radius:50%; background:var(--warm); flex-shrink:0; }
+
+  .beat-tag{
+    font-size:.72rem;
+    color:var(--calm);
+    text-align:center;
+    margin-bottom:.9rem;
+    opacity:0; transition:opacity .6s ease;
+  }
+  .beat.in-view .beat-tag{ opacity:1; }
+  .beat.flag .beat-tag{ color:var(--warm); }
+
+  .beat p{
+    font-family:'Newsreader', serif;
+    font-size:clamp(1.2rem, 2.6vw, 1.55rem);
+    line-height:1.55;
+    text-align:center;
+    color:var(--text);
+    opacity:0; transform:translateY(14px);
+    transition:opacity .8s ease .1s, transform .8s ease .1s;
+  }
+  .beat.in-view p{ opacity:1; transform:none; }
+  .beat p.sub{
+    font-family:'Manrope',sans-serif;
+    font-size:.92rem;
+    color:var(--text-dim);
+    margin-top:.9rem;
+    max-width:42ch; margin-left:auto; margin-right:auto;
+  }
+
+  .quote-line{
+    display:inline-block;
+    border-left:2px solid var(--calm);
+    padding-left:14px;
+    text-align:left;
+    font-style:italic;
+  }
+  .beat.flag .quote-line{ border-left-color:var(--warm); }
+
+  .closing{
+    min-height:90vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:4rem 1.5rem; position:relative; z-index:2;
+  }
+  .closing p.big{
+    font-family:'Newsreader', serif;
+    font-size:clamp(1.6rem, 4vw, 2.4rem);
+    max-width:16ch; line-height:1.3;
+    opacity:0; transform:translateY(14px);
+    transition:opacity .9s ease, transform .9s ease;
+  }
+  .closing.in-view p.big{ opacity:1; transform:none; }
+  .closing .wordmark{
+    margin-top:2.5rem; font-size:.85rem; letter-spacing:.04em; color:var(--text-dim);
+  }
+  .closing .wordmark b{ color:var(--calm); font-weight:600; }
+
+  @media (prefers-reduced-motion: reduce){
+    .thread-rail::after, .connector::after, .scroll-cue::after{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="thread-rail" aria-hidden="true"></div>
+
+<section class="hero">
+  <div class="eyebrow-devices" aria-hidden="true">
+    <div class="mini-watch"></div>
+    <div class="thread-dot"></div>
+    <div class="mini-phone"></div>
+  </div>
+  <h1>Two devices.<br>One <em>quiet</em> promise.</h1>
+  <p>iQOO Pulse doesn't watch your health. It watches over you — and stays out of the way until it matters.</p>
+  <div class="scroll-cue">scroll</div>
+</section>
+
+<section class="beat" data-beat>
+  <p class="beat-tag">6:14 AM · A Tuesday, like any other</p>
+  <div class="beat-devices">
+    <div class="device watch"><span class="time">6:14</span><span class="status-dot"></span><span class="label">All normal</span></div>
+    <div class="connector"></div>
+    <div class="device phone"><span class="time">6:14</span><span class="status-dot"></span><span class="label">Nothing to show you</span></div>
+  </div>
+  <p><span class="quote-line">Raghavan, 71, lives alone in Chennai. His watch has been reading his heartbeat all night. His phone hasn't said a word.</span>
+  <span class="sub">That's the design. When nothing is wrong, iQOO Pulse has nothing to say — no dashboard to check, no streak to keep.</span></p>
+</section>
+
+<section class="beat" data-beat>
+  <p class="beat-tag">11:32 AM · Something shifts</p>
+  <div class="beat-devices">
+    <div class="device watch"><span class="time">11:32</span><span class="status-dot"></span><span class="label">Reading closely</span></div>
+    <div class="connector"></div>
+    <div class="device phone"><span class="time">11:32</span><span class="status-dot"></span><span class="label">Listening in</span></div>
+  </div>
+  <p><span class="quote-line">A sudden movement. His heart rate spikes, then drops. Then — nothing. No steps, no motion, for ninety seconds.</span>
+  <span class="sub">One signal alone means little. Together, across watch and phone, they start to mean something.</span></p>
+</section>
+
+<section class="beat flag" data-beat>
+  <p class="beat-tag">11:34 AM · The AI decides to ask, not alarm</p>
+  <div class="beat-devices">
+    <div class="device watch flag"><span class="time">11:34</span><span class="status-dot"></span><span class="label">Are you okay?</span></div>
+    <div class="connector"></div>
+    <div class="device phone flag"><span class="time">11:34</span><span class="status-dot"></span><span class="label">Waiting, watching</span></div>
+  </div>
+  <p><span class="quote-line">"I noticed something unusual. Are you okay?"</span>
+  <span class="sub">No siren. No panic. Just a question, gently placed on his wrist — because most of the time, the answer is yes.</span></p>
+</section>
+
+<section class="beat flag" data-beat>
+  <p class="beat-tag">11:35 AM · No answer comes</p>
+  <div class="signal-row">
+    <div class="signal-chip"><span class="dot"></span>Heart rate spike, then drop</div>
+    <div class="signal-chip"><span class="dot"></span>Sudden movement, then stillness</div>
+    <div class="signal-chip"><span class="dot"></span>90 seconds of no motion, no response</div>
+  </div>
+  <p><span class="quote-line">The AI doesn't guess. It shows its reasoning, plainly, the way it would explain itself to a person.</span>
+  <span class="sub">This is what makes Pulse an agent, not an alarm — it can tell you why, not just that.</span></p>
+</section>
+
+<section class="beat flag" data-beat>
+  <p class="beat-tag">11:36 AM · It reaches for someone who can help</p>
+  <div class="beat-devices">
+    <div class="device phone flag" style="margin:0 auto;">
+      <span class="time">Maya</span>
+      <span class="status-dot"></span>
+      <span class="label">"Pulse noticed your father hasn't responded. Last seen: kitchen."</span>
+    </div>
+  </div>
+  <p><span class="quote-line">300 kilometers away, in Bengaluru, Maya's phone lights up. Not a missed call from a stranger — a message she can act on immediately.</span>
+  <span class="sub">The workflow was hers to configure. Pulse only follows the plan she trusted it with.</span></p>
+</section>
+
+<section class="beat" data-beat>
+  <p class="beat-tag">11:41 AM · Resolved</p>
+  <div class="beat-devices">
+    <div class="device watch"><span class="time">11:41</span><span class="status-dot"></span><span class="label">All normal</span></div>
+    <div class="connector"></div>
+    <div class="device phone"><span class="time">11:41</span><span class="status-dot"></span><span class="label">Maya confirmed contact</span></div>
+  </div>
+  <p><span class="quote-line">He'd only slipped, and sat down hard on the kitchen floor — winded, not hurt. Maya called. He picked up.</span>
+  <span class="sub">Pulse goes quiet again. No log to review, no dashboard to close. Just two devices, watching, together.</span></p>
+</section>
+
+<section class="closing" data-closing>
+  <p class="big">Don't make people monitor their health.<br>Let the agent monitor what matters.</p>
+  <div class="wordmark"><b>iQOO Pulse</b> — a quiet guardian, built into the watch and phone you already wear.</div>
+</section>
+
+<script>
+  const beats = document.querySelectorAll('.beat, .closing');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('in-view');
+        if(e.target.classList.contains('flag')){
+          document.body.classList.add('alert');
+        }
+      } else {
+        if(e.target.classList.contains('flag') && e.boundingClientRect && e.boundingClientRect.top > 0){
+          document.body.classList.remove('alert');
+        }
+      }
+    });
+  }, { threshold: 0.4 });
+  beats.forEach(b=>io.observe(b));
+
+  // manage the rail color based on which flagged beat is centered
+  const flagged = document.querySelectorAll('.beat.flag');
+  const railIO = new IntersectionObserver((entries)=>{
+    let anyFlagged = false;
+    entries.forEach(e=>{ if(e.isIntersecting) anyFlagged = true; });
+    document.body.classList.toggle('alert', anyFlagged);
+  }, { threshold: 0.5 });
+  flagged.forEach(f=>railIO.observe(f));
+</script>
+
+</body>
+</html>
